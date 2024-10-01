@@ -17,8 +17,3 @@ variable "principal" {
     default = 885952650506
     type = number
 }
-
-variable "ver" {
-    default = 3
-    type = number
-}
