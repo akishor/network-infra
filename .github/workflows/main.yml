@@ -1,5 +1,4 @@
 name: Networking Setup in AWS
-3
 on: 
   push:
     branches:
