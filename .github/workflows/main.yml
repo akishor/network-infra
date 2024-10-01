@@ -1,0 +1,51 @@
+name: Networking Setup in AWS
+3
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  terraform:
+    name: 'terraform aws deploy'
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: 'us-east-1'
+      TF_VERSION: '1.9.5'
+
+    steps:
+    - name: 'Checkout Github repo'
+      uses: actions/checkout@v2
+
+    - name: 'Configure AWS Credential'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 'setup terraform'
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: 'Terraform Init'
+      run: terraform init
+
+    - name: 'Terraform Format'
+      run: terraform fmt 
+
+    - name: 'Terraform validate'
+      run: terraform validate 
+
+    - name: 'Terraform plan'
+      run: terraform plan -out=tfplan
+
+    - name: 'Terraform Apply'
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply #-auto-approve tfplan
